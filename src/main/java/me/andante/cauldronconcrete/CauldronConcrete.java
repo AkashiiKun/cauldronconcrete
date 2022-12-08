@@ -13,8 +13,6 @@ public class CauldronConcrete implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        // log("Initializing");
-
         log("Initialized");
     }
 

@@ -10,12 +10,6 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-if (System.env.CI == "true") {
-    version = "${project.mod_version}+a${System.env.GITHUB_RUN_NUMBER}.${project.minecraft_version}-fabric"
-} else {
-    version = "${project.mod_version}+${project.minecraft_version}-fabric"
-}
-
 repositories {}
 
 dependencies {
@@ -34,7 +28,6 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
     it.options.release = 17
 }
 
@@ -49,9 +42,7 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(remapJar) {
-                builtBy remapJar
-            }
+            from components.java
         }
     }
 
