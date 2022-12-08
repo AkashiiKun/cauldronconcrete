@@ -16,6 +16,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Debug;
@@ -35,15 +37,27 @@ public abstract class LeveledCauldronBlockMixin extends AbstractCauldronBlock {
 
     @Inject(method = "onEntityCollision", at = @At("HEAD"))
     private void convertConcreteItems(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
-        if (!world.isClient && entity instanceof ItemEntity item && item.getStack().getItem() instanceof BlockItem blockItem
-                && blockItem.getBlock() instanceof ConcretePowderBlock block && this.isEntityTouchingFluid(state, pos, entity)) {
+        if (!world.isClient && entity instanceof ItemEntity item && item.getStack().getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ConcretePowderBlock block && this.isEntityTouchingFluid(state, pos, entity)) {
+            // play splash sound
+            Vec3d itemVelocity = item.getVelocity();
+
+            float volume = 0.4F + ((float)Math.sqrt(itemVelocity.x * itemVelocity.x * 0.2 + itemVelocity.y * itemVelocity.y + itemVelocity.z * itemVelocity.z * 0.2) * 0.2F);
+            float pitch = 1.0F + (item.world.random.nextFloat() - item.world.random.nextFloat()) * 0.4F;
+
+            world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, volume, pitch);
+
+            // bubble + splash particles
+            var itemPos = item.getPos();
+
+            // i spent hours adjusting these values
+            ((ServerWorld)world).spawnParticles(ParticleTypes.BUBBLE, itemPos.x, MathHelper.floor(itemPos.y) + 0.95, itemPos.z, 10, 0.1, 0, 0.1, 0.1);
+            ((ServerWorld)world).spawnParticles(ParticleTypes.SPLASH, itemPos.x, MathHelper.floor(itemPos.y) + 1.0, itemPos.z, 20, 0.1, 0, 0.1, 0.025);
+
+            // convert powder to concrete
             NbtCompound tag = item.getStack().writeNbt(new NbtCompound());
             tag.putString("id", Registry.ITEM.getId(((ConcretePowderBlockAccessor) block).getHardenedState().getBlock().asItem()).toString());
 
             item.setStack(ItemStack.fromNbt(tag));
-            var itemPos = item.getPos();
-            ((ServerWorld)world).spawnParticles(ParticleTypes.BUBBLE, itemPos.x, itemPos.y, itemPos.z, 20, 0, 0, 0, 0.1);
-            world.playSound(null, pos, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundCategory.BLOCKS, 0.5F, 1.0F);
         }
     }
 }
