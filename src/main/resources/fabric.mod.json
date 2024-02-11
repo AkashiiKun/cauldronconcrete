@@ -6,12 +6,11 @@
   "name": "Cauldron Concrete",
   "description": "Allows you to wet concrete powder in a cauldron!",
   "authors": [
-    "andante."
+    "AkashiiKun"
   ],
   "contact": {
-    "homepage": "https://curseforge.com/minecraft/mc-mods/cauldronconcrete",
-    "sources": "https://github.com/andantedevs/cauldronconcrete",
-    "issues": "https://github.com/andantedevs/cauldronconcrete/issues"
+    "sources": "https://github.com/akashiikun/cauldronconcrete",
+    "issues": "https://github.com/akashiikun/cauldronconcrete/issues"
   },
 
   "license": "MIT",
@@ -20,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.andante.cauldronconcrete.CauldronConcrete"
+      "io.github.akashiikun.cauldronconcrete.CauldronConcrete"
     ]
   },
   "mixins": [
@@ -28,7 +27,7 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.14.8",
-    "minecraft": ">=1.19.2"
+    "fabricloader": ">=0.15.6",
+    "minecraft": ">=1.20.1"
   }
 }

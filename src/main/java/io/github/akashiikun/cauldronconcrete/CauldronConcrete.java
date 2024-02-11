@@ -1,4 +1,4 @@
-package me.andante.cauldronconcrete;
+package io.github.akashiikun.cauldronconcrete;
 
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.Level;
